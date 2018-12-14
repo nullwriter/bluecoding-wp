@@ -30,15 +30,17 @@ $users = get_users();
                         <td><?php echo $user->last_name ?></td>
                         <td><?php echo $user->user_email ?></td>
                         <td><?php echo implode($user->roles, ",") ?></td>
-                        <td>
+                        <td class="member-status">
                             <?php
                                 $status = get_user_meta($user->ID, 'member_status', true);
                                 echo ( (empty($status) || $status == 'active') ? 'active' : $status);
                             ?>
                         </td>
                         <td>
-                            <a class="btn btn-sm btn-secondary mwpu-action-link" id="mwpu-edit" href>edit</a>
-                            <a class="btn btn-sm btn-warning mwpu-action-link" id="mwpu-change-status" href>
+                            <a class="btn btn-sm btn-secondary mwpu-action-link mwpu-edit" data-id="<?php echo $user->ID ?>">
+                                edit
+                            </a>
+                            <a class="btn btn-sm btn-warning mwpu-action-link mwpu-change-status" data-id="<?php echo $user->ID ?>">
 	                            <?php
                                     $status = get_user_meta($user->ID, 'member_status', true);
                                     echo ( (empty($status) || $status == 'active') ? 'deactivate' : 'activate');

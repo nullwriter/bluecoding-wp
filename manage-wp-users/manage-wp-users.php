@@ -26,7 +26,7 @@ class Manage_WP_Users
 	private $plugin_name;
 
 	/**
-	 * Constructor calls to add hooks and filters
+	 * Constructor calls to add hooks, filters, styles and scripts.
 	 *
 	 * Manage_WP_Users constructor.
 	 */
@@ -36,6 +36,7 @@ class Manage_WP_Users
 
 		$this->loadStyles();
 		$this->loadScripts();
+
 		$this->loadActions();
 		$this->loadFilters();
 	}
@@ -43,6 +44,7 @@ class Manage_WP_Users
 	private function loadActions()
 	{
 		add_action('admin_menu', array($this, 'registerMenuPage'));
+		add_action('wp_ajax_changeMemberStatus', array($this, 'changeMemberStatus'));
 	}
 
 	private function loadFilters()
@@ -83,6 +85,19 @@ class Manage_WP_Users
 			'1.0.0',
 			false
 		);
+
+		wp_enqueue_script(
+			$this->plugin_name . '_alertify',
+			plugin_dir_url(__FILE__) . 'lib/js/alertify.min.js',
+			array( 'jquery', $this->plugin_name . '_main-js' ),
+			'1.0.0',
+			false
+		);
+
+		// global variables
+		wp_localize_script($this->plugin_name . '_main-js', 'admin_url', array(
+			'ajax_url' => admin_url('admin-ajax.php')
+		));
 	}
 
 	private function loadStyles()
@@ -110,10 +125,24 @@ class Manage_WP_Users
 			'1.0.0',
 			'all'
 		);
+
+		wp_enqueue_style(
+			$this->plugin_name . '_alertify',
+			plugin_dir_url(__FILE__) . 'lib/css/alertify.min.css',
+			array(),
+			'1.0.0',
+			'all'
+		);
 	}
 
+
+	/***************************************************************************************************************/
+	/********************************************** PUBLIC FUNCTIONS ***********************************************/
+	/***************************************************************************************************************/
+
+
 	/**
-	 * Checks users member_status at authentication. If inactive, returns a WP_Error.
+	 * Checks user's member_status at authentication. If inactive, returns a WP_Error.
 	 *
 	 * @param $user
 	 * @param $username
@@ -132,6 +161,9 @@ class Manage_WP_Users
 		}
 	}
 
+	/**
+	 * Registers the user list page and admin menu item
+	 */
 	public function registerMenuPage()
 	{
 		add_menu_page(
@@ -150,6 +182,28 @@ class Manage_WP_Users
 	public function displayManageUsersPage()
 	{
 		require_once plugin_dir_path(__FILE__) . 'partials/manage-wp-users-list-page.php';
+	}
+
+	/**
+	 * Ajax function that changes the member_status of a user by switching the current status to the opposite.
+	 */
+	public function changeMemberStatus()
+	{
+		$user_id = $_POST['user_id'];
+		$currentStatus = get_user_meta($user_id, 'member_status', true);
+		$newStatus = 'active';
+		$result = false;
+
+		if (empty($currentStatus) || $currentStatus == 'active') {
+			$newStatus = 'inactive';
+		}
+
+		if (update_user_meta($user_id, 'member_status', $newStatus)) {
+			$result = true;
+		}
+
+		echo json_encode(array('result' => $result, 'status' => $newStatus));
+		die();
 	}
 
 	/**

@@ -3,31 +3,52 @@
 
     $( window ).load(function() {
 
-        // $('#test_api_connection').on('click', function(){
-        //     $('#result_test_api').text('');
-        //     $('#loading-spinner').show();
-        //
-        //     $.ajax({
-        //         url : admin_url.ajax_url,
-        //         type : 'get',
-        //         data : {
-        //             action : 'simplefmTestConnection'
-        //         },
-        //         success : function( response ) {
-        //             response = JSON.parse(response);
-        //             $('#result_test_api').html(response.message);
-        //         },
-        //         complete : function() {
-        //             $('#loading-spinner').hide();
-        //         }
-        //     });
-        // });
+        $('.mwpu-change-status').on('click', function(){
+            var user_id = $(this).data('id');
+            var member_status_field = $(this).parent().parent().children('.member-status');
+
+            $.ajax({
+                url : admin_url.ajax_url,
+                type : 'post',
+                data : {
+                    action : 'changeMemberStatus',
+                    user_id: user_id
+                },
+                success : function( response ) {
+                    response = JSON.parse(response);
+
+                    if (response.result) {
+                        alertify.success('User status has been updated successfully to: ' + response.status);
+                        member_status_field.text(response.status);
+
+                        // if (response.status === 'active') {
+                        //     $(this).text('deactivate');
+                        // } else {
+                        //     $(this).text('activate');
+                        // }
+                    } else {
+                        alertify.error('Something went wrong!');
+                    }
+                },
+                error: function (xhr) {
+                    console.log(xhr);
+                }
+            });
+        });
 
         $('#mwpu-user-table').DataTable({
             'columnDefs': [
                 {
                     'targets': 0,
-                    'className': 'select-checkbox'
+                    'orderable': false,
+                    'className': 'select-checkbox',
+                    'checkboxes': {
+                        'selectRow': true
+                    }
+                },
+                {
+                    'targets': 7,
+                    'orderable': false
                 }
             ],
             'select': {
