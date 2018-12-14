@@ -46,6 +46,7 @@ class Manage_WP_Users
 		add_action('admin_menu', array($this, 'registerMenuPage'));
 		add_action('wp_ajax_changeMemberStatus', array($this, 'changeMemberStatus'));
 		add_action('wp_ajax_updateMemberDisplayName', array($this, 'updateMemberDisplayName'));
+		add_action('wp_ajax_changeMemberStatusInBulk', array($this, 'changeMemberStatusInBulk'));
 	}
 
 	private function loadFilters()
@@ -206,6 +207,35 @@ class Manage_WP_Users
 		die();
 	}
 
+	public function log($log) {
+		if (true === WP_DEBUG) {
+			if (is_array($log) || is_object($log)) {
+				error_log(print_r($log, true));
+			} else {
+				error_log($log);
+			}
+		}
+	}
+
+	/**
+	 * Ajax function to change member status in bulk
+	 */
+	public function changeMemberStatusInBulk()
+	{
+		$selectedIds = $_POST['selected_ids'];
+		$newStatus = $_POST['status'];
+
+		foreach($selectedIds as $user_id){
+			update_user_meta($user_id, 'member_status', $newStatus);
+		}
+
+		echo json_encode(array('result' => true, 'count' => count($selectedIds), 'status' => $newStatus));
+		die();
+	}
+
+	/**
+	 * Ajax function to update members display name
+	 */
 	public function updateMemberDisplayName()
 	{
 		$user_id = $_POST['user_id'];

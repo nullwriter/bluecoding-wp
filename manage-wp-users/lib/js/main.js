@@ -4,6 +4,27 @@
     $( window ).load(function() {
 
         /**
+         * Event to change status in bulk
+         */
+        $('#btn-bulk-action').on('click', function(){
+            var selectedIds = [];
+            var status = $('#mwpu-bulk-action').val();
+
+            $('tr.selected').each(function(){
+                selectedIds.push($(this).data('id'));
+            });
+
+            sendBulkAction(selectedIds, status);
+        });
+
+        /**
+         * Event to update selected for bulk action
+         */
+        $(document).on('click', 'td.select-checkbox', function(){
+            updateSelectedCount();
+        });
+
+        /**
          * Event to edit display name for user
          */
         $('.mwpu-edit').on('click', function(){
@@ -66,6 +87,76 @@
         });
     });
 
+    /**
+     * Updates the selected count in the Bulk Action label
+     */
+    function updateSelectedCount() {
+        var quantity = $('tr.selected').length;
+        $('#mwpu-quantity').text(quantity);
+
+        if (quantity <= 0) {
+            $('#btn-bulk-action').addClass('disabled').prop("disabled",true);
+        } else {
+            $('#btn-bulk-action').removeClass('disabled').prop("disabled",false);
+        }
+    }
+
+    /**
+     * Ajax to change status in bulk
+     *
+     * @param selectedIds
+     * @param status
+     */
+    function sendBulkAction(selectedIds, status) {
+        $.ajax({
+            url : admin_url.ajax_url,
+            type : 'post',
+            data : {
+                'action' : 'changeMemberStatusInBulk',
+                'selected_ids[]': selectedIds,
+                'status': status
+            },
+            success : function( response ) {
+                response = JSON.parse(response);
+
+                if (response.result) {
+                    alertify.success(
+                        'Member status has been changed to ' +
+                        response.status.toUpperCase() +
+                        ' for ' + response.count + ' users.'
+                    );
+
+                    for(var i in selectedIds) {
+                        var trParent = $('tr[data-id="'+selectedIds[i]+'"]');
+                        var memberStatusField = trParent.children('.mwpu-member-status');
+                        var button = trParent.children('.mwpu-actions').children('.mwpu-change-status');
+
+                        // Optional: remove selected and update count
+                        trParent.removeClass('selected');
+                        updateSelectedCount();
+
+                        // Update button and status labels for each user updated
+                        updateLabels(response.status, memberStatusField, button);
+                    }
+
+                } else {
+                    alertify.error('Something went wrong!');
+                }
+            },
+            error: function (xhr) {
+                alertify.error('Something went wrong: '+xhr);
+                console.log(xhr);
+            }
+        });
+    }
+
+    /**
+     * Ajax to change specific member status
+     *
+     * @param user_id
+     * @param memberStatusField
+     * @param button
+     */
     function changeMemberStatus(user_id, memberStatusField, button) {
         $.ajax({
             url : admin_url.ajax_url,
@@ -91,6 +182,12 @@
         });
     }
 
+    /**
+     * Ajax to edit users display name
+     * @param user_id
+     * @param name
+     * @param nameField
+     */
     function updateMemberDisplayName(user_id, name, nameField) {
         $.ajax({
             url : admin_url.ajax_url,
@@ -117,6 +214,13 @@
         });
     }
 
+    /**
+     * Updates labels of a field in the list, optionally updates the status button if available as parameter
+     *
+     * @param newStatus
+     * @param statusField
+     * @param button
+     */
     function updateLabels(newStatus, statusField, button) {
 
         statusField.text(newStatus);

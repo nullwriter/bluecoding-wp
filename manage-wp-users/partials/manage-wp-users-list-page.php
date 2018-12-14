@@ -7,7 +7,16 @@ $users = get_users();
 <div class="wrap">
 	<h2><?php echo esc_html(get_admin_page_title()); ?></h2>
 
-	<div class="mt-4 pl-4 pr-4">
+	<div class="mt-4 pl-4 pr-4 d-flex flex-column">
+        <div class="mb-4">
+            <span>Bulk Action</span>
+            <select id="mwpu-bulk-action">
+                <option value="inactive">Deactivate</option>
+                <option value="active">Activate</option>
+            </select>
+            <button id="btn-bulk-action" class="btn btn-sm btn-primary disabled" disabled>Submit</button>
+            <small><span id="mwpu-quantity">0</span> selected</small>
+        </div>
         <table id="mwpu-user-table" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
@@ -34,7 +43,7 @@ $users = get_users();
                                 echo ( (empty($status) || $status == 'active') ? 'active' : $status);
                             ?>
                         </td>
-                        <td>
+                        <td class="mwpu-actions">
                             <a class="btn btn-sm btn-secondary mwpu-action-link mwpu-edit" data-id="<?php echo $user->ID ?>">
                                 edit
                             </a>
