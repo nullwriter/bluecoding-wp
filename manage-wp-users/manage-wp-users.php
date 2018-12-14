@@ -34,17 +34,14 @@ class Manage_WP_Users
 	{
 		$this->plugin_name = 'manage-wordpress-users';
 
-		add_menu_page(
-			__('Manage WP Users', $this->plugin_name),
-			__('Manage WP Users', $this->plugin_name),
-			'manage_options',
-			$this->plugin_name,
-			array($this, 'displayManageUsersPage'),
-			plugin_dir_url(dirname(__FILE__)) . 'admin/img/api-logo.png'
-		);
-
 		$this->loadStyles();
 		$this->loadScripts();
+		$this->loadActions();
+	}
+
+	private function loadActions()
+	{
+		add_action('admin_menu', array($this, 'registerMenuPage'));
 	}
 
 	private function loadScripts()
@@ -52,6 +49,22 @@ class Manage_WP_Users
 		wp_enqueue_script(
 			$this->plugin_name . '_main-js',
 			plugin_dir_url(__FILE__) . 'lib/js/main.js',
+			array( 'jquery', $this->plugin_name . '_datatables' ),
+			'1.0.0',
+			false
+		);
+
+		wp_enqueue_script(
+			$this->plugin_name . '_datatables',
+			plugin_dir_url(__FILE__) . 'lib/js/datatables.min.js',
+			array( 'jquery' ),
+			'1.0.0',
+			false
+		);
+
+		wp_enqueue_script(
+			$this->plugin_name . '_bs4',
+			plugin_dir_url(__FILE__) . 'lib/js/bootstrap.min.js',
 			array( 'jquery' ),
 			'1.0.0',
 			false
@@ -63,9 +76,37 @@ class Manage_WP_Users
 		wp_enqueue_style(
 			$this->plugin_name . '_main-style',
 			plugin_dir_url(__FILE__) . 'lib/css/style.css',
+			array($this->plugin_name . '_datatables'),
+			'1.0.0',
+			'all'
+		);
+
+		wp_enqueue_style(
+			$this->plugin_name . '_datatables',
+			plugin_dir_url(__FILE__) . 'lib/css/datatables.min.css',
 			array(),
 			'1.0.0',
 			'all'
+		);
+
+		wp_enqueue_style(
+			$this->plugin_name . '_bs4',
+			plugin_dir_url(__FILE__) . 'lib/css/bootstrap.min.css',
+			array(),
+			'1.0.0',
+			'all'
+		);
+	}
+
+	public function registerMenuPage()
+	{
+		add_menu_page(
+			__('Manage Users', $this->plugin_name),
+			__('Manage Users', $this->plugin_name),
+			'manage_options',
+			$this->plugin_name,
+			array($this, 'displayManageUsersPage'),
+			plugin_dir_url(__FILE__) . 'lib/img/list-logo.png'
 		);
 	}
 
@@ -74,7 +115,7 @@ class Manage_WP_Users
 	 */
 	public function displayManageUsersPage()
 	{
-		require_once plugin_dir_path(dirname(__FILE__)) . 'partials/manage-wp-users-list-page.php';
+		require_once plugin_dir_path(__FILE__) . 'partials/manage-wp-users-list-page.php';
 	}
 
 	/**
