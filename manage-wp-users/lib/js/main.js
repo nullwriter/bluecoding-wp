@@ -64,7 +64,7 @@
         /**
          * Initialize datatable
          */
-        $('#mwpu-user-table').DataTable({
+        var DT = $('#mwpu-user-table').DataTable({
             'columnDefs': [
                 {
                     'targets': 0,
@@ -84,6 +84,16 @@
                 'selector': 'td:first-child'
             },
             order: [[ 1, 'asc' ]]
+        });
+
+        $(document).on('click', '.selectAll', function(e) {
+            if ($(this).is( ":checked" )) {
+                DT.rows(  ).select();
+            } else {
+                DT.rows(  ).deselect();
+            }
+
+            updateSelectedCount();
         });
     });
 
@@ -138,6 +148,8 @@
                         // Update button and status labels for each user updated
                         updateLabels(response.status, memberStatusField, button);
                     }
+
+                    $('.selectAll').attr('checked', false);
 
                 } else {
                     alertify.error('Something went wrong!');

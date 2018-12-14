@@ -20,7 +20,7 @@ $users = get_users();
         <table id="mwpu-user-table" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
-                    <th></th>
+                    <th class="text-center"><input type="checkbox" class="selectAll" /> </th>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
