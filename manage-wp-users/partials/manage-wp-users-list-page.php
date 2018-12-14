@@ -25,7 +25,7 @@ $users = get_users();
                     <tr data-id="<?php echo $user->ID ?>">
                         <td></td>
                         <td><?php echo $user->ID ?></td>
-                        <td><?php echo $user->display_name ?></td>
+                        <td class="mwpu-display-name"><?php echo $user->display_name ?></td>
                         <td><?php echo $user->user_email ?></td>
                         <td><?php echo implode($user->roles, ",") ?></td>
                         <td class="member-status">

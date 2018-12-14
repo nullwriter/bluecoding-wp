@@ -45,6 +45,7 @@ class Manage_WP_Users
 	{
 		add_action('admin_menu', array($this, 'registerMenuPage'));
 		add_action('wp_ajax_changeMemberStatus', array($this, 'changeMemberStatus'));
+		add_action('wp_ajax_updateMemberDisplayName', array($this, 'updateMemberDisplayName'));
 	}
 
 	private function loadFilters()
@@ -203,6 +204,20 @@ class Manage_WP_Users
 		}
 
 		echo json_encode(array('result' => $result, 'status' => $newStatus));
+		die();
+	}
+
+	public function updateMemberDisplayName()
+	{
+		$user_id = $_POST['user_id'];
+		$newName = $_POST['name'];
+		$result = false;
+
+		if (wp_update_user(array( 'ID' => $user_id, 'display_name' => $newName ))) {
+			$result = true;
+		}
+
+		echo json_encode(array('result' => $result, 'name' => $newName));
 		die();
 	}
 
