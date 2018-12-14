@@ -4,15 +4,15 @@
  *
  * @author    Christian Feo <christianfeob@yahoo.com>
  * @license   GPL-2.0+
- * @link      https://github.com/GaryJones/move-floating-social-bar-in-genesis
+ * @link      https://github.com/nullwriter/bluecoding-wp
  *
  * @wordpress-plugin
  * Plugin Name:       Manage Wordpress Users
- * Plugin URI:        https://github.com/GaryJones/move-floating-social-bar-in-genesis
+ * Plugin URI:        https://github.com/nullwriter/bluecoding-wp
  * Description:       Lists your wordpress users with different set of actions available.
  * Version:           1.0.0
  * Author:            Christian Feo
- * Author URI:        https://github.com/GaryJones/move-floating-social-bar-in-genesis
+ * Author URI:        https://github.com/nullwriter/bluecoding-wp
  * Text Domain:       manage-wordpress-users
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
