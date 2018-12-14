@@ -37,11 +37,17 @@ class Manage_WP_Users
 		$this->loadStyles();
 		$this->loadScripts();
 		$this->loadActions();
+		$this->loadFilters();
 	}
 
 	private function loadActions()
 	{
 		add_action('admin_menu', array($this, 'registerMenuPage'));
+	}
+
+	private function loadFilters()
+	{
+		add_filter('authenticate', array($this, 'checkUserStatus'));
 	}
 
 	private function loadScripts()
@@ -66,6 +72,14 @@ class Manage_WP_Users
 			$this->plugin_name . '_bs4',
 			plugin_dir_url(__FILE__) . 'lib/js/bootstrap.min.js',
 			array( 'jquery' ),
+			'1.0.0',
+			false
+		);
+
+		wp_enqueue_script(
+			$this->plugin_name . '_datatables-select',
+			plugin_dir_url(__FILE__) . 'lib/js/dataTables.select.min.js',
+			array( 'jquery', $this->plugin_name . '_datatables', $this->plugin_name . '_main-js' ),
 			'1.0.0',
 			false
 		);
@@ -98,6 +112,26 @@ class Manage_WP_Users
 		);
 	}
 
+	/**
+	 * Checks users member_status at authentication. If inactive, returns a WP_Error.
+	 *
+	 * @param $user
+	 * @param $username
+	 * @return WP_Error
+	 */
+	public function checkUserStatus($user, $username)
+	{
+		$user_id = $user->data->ID;
+		$member_status = get_user_meta($user_id, "member_status", true);
+
+		// Absense of an inactive status corresponds to an active account
+		if (empty($member_status) || $member_status == 'active') {
+			return $user;
+		} else {
+			return new WP_Error('disabled_account', 'This account is currently disabled for access.');
+		}
+	}
+
 	public function registerMenuPage()
 	{
 		add_menu_page(
@@ -125,8 +159,7 @@ class Manage_WP_Users
 	 */
 	public static function getInstance()
 	{
-		if (!self::$instance)
-		{
+		if (!self::$instance) {
 			self::$instance = new self;
 		}
 

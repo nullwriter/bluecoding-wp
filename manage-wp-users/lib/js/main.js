@@ -23,7 +23,19 @@
         //     });
         // });
 
-        $('#mwpu-user-table').DataTable();
+        $('#mwpu-user-table').DataTable({
+            'columnDefs': [
+                {
+                    'targets': 0,
+                    'className': 'select-checkbox'
+                }
+            ],
+            'select': {
+                'style': 'multi',
+                'selector': 'td:first-child'
+            },
+            order: [[ 1, 'asc' ]]
+        });
     });
 
 })( jQuery );
