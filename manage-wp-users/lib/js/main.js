@@ -5,6 +5,7 @@
 
         $('.mwpu-change-status').on('click', function(){
             var user_id = $(this).data('id');
+            var button = $(this);
             var member_status_field = $(this).parent().parent().children('.member-status');
 
             $.ajax({
@@ -18,19 +19,14 @@
                     response = JSON.parse(response);
 
                     if (response.result) {
-                        alertify.success('User status has been updated successfully to: ' + response.status);
-                        member_status_field.text(response.status);
-
-                        // if (response.status === 'active') {
-                        //     $(this).text('deactivate');
-                        // } else {
-                        //     $(this).text('activate');
-                        // }
+                        alertify.success('User status has been updated successfully to: ' + response.status.toUpperCase());
+                        updateLabels(response.status, member_status_field, button);
                     } else {
                         alertify.error('Something went wrong!');
                     }
                 },
                 error: function (xhr) {
+                    alertify.error('Something went wrong: '+xhr);
                     console.log(xhr);
                 }
             });
@@ -47,7 +43,7 @@
                     }
                 },
                 {
-                    'targets': 7,
+                    'targets': 6,
                     'orderable': false
                 }
             ],
@@ -57,6 +53,19 @@
             },
             order: [[ 1, 'asc' ]]
         });
+
+        function updateLabels(new_status, status_field, button) {
+
+            // update member status in list
+            status_field.text(new_status);
+
+            // update button label
+            if (new_status === 'active') {
+                button.text('deactivate');
+            } else {
+                button.text('activate');
+            }
+        }
     });
 
 })( jQuery );

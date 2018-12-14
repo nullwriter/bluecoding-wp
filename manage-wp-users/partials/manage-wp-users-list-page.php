@@ -13,8 +13,7 @@ $users = get_users();
                 <tr>
                     <th></th>
                     <th>ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
+                    <th>Name</th>
                     <th>Email</th>
                     <th>Type</th>
                     <th>Status</th>
@@ -26,8 +25,7 @@ $users = get_users();
                     <tr data-id="<?php echo $user->ID ?>">
                         <td></td>
                         <td><?php echo $user->ID ?></td>
-                        <td><?php echo $user->first_name ?></td>
-                        <td><?php echo $user->last_name ?></td>
+                        <td><?php echo $user->display_name ?></td>
                         <td><?php echo $user->user_email ?></td>
                         <td><?php echo implode($user->roles, ",") ?></td>
                         <td class="member-status">
