@@ -35,7 +35,7 @@
         $('.mwpu-change-status').on('click', function(){
             var user_id = $(this).data('id');
             var button = $(this);
-            var memberStatusField = $(this).parent().parent().children('.member-status');
+            var memberStatusField = $(this).parent().parent().children('.mwpu-member-status');
 
             changeMemberStatus(user_id, memberStatusField, button);
         });

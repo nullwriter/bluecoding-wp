@@ -28,7 +28,7 @@ $users = get_users();
                         <td class="mwpu-display-name"><?php echo $user->display_name ?></td>
                         <td><?php echo $user->user_email ?></td>
                         <td><?php echo implode($user->roles, ",") ?></td>
-                        <td class="member-status">
+                        <td class="mwpu-member-status">
                             <?php
                                 $status = get_user_meta($user->ID, 'member_status', true);
                                 echo ( (empty($status) || $status == 'active') ? 'active' : $status);

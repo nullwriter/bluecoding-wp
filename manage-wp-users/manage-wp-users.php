@@ -26,7 +26,7 @@ class Manage_WP_Users
 	private $plugin_name;
 
 	/**
-	 * Constructor calls to add hooks, filters, styles and scripts.
+	 * Constructor calls to add hooks and filters.
 	 *
 	 * Manage_WP_Users constructor.
 	 */
@@ -34,15 +34,15 @@ class Manage_WP_Users
 	{
 		$this->plugin_name = 'manage-wordpress-users';
 
-		$this->loadStyles();
-		$this->loadScripts();
-
 		$this->loadActions();
 		$this->loadFilters();
 	}
 
 	private function loadActions()
 	{
+		add_action('admin_enqueue_scripts', array($this, 'loadScripts'));
+		add_action('admin_enqueue_scripts', array($this, 'loadStyles'));
+
 		add_action('admin_menu', array($this, 'registerMenuPage'));
 		add_action('wp_ajax_changeMemberStatus', array($this, 'changeMemberStatus'));
 		add_action('wp_ajax_updateMemberDisplayName', array($this, 'updateMemberDisplayName'));
@@ -50,10 +50,14 @@ class Manage_WP_Users
 
 	private function loadFilters()
 	{
-		add_filter('authenticate', array($this, 'checkUserStatus'));
+		add_filter('authenticate', array($this, 'checkUserStatus'), 30, 3);
 	}
 
-	private function loadScripts()
+	/***************************************************************************************************************/
+	/********************************************** PUBLIC FUNCTIONS ***********************************************/
+	/***************************************************************************************************************/
+
+	public function loadScripts()
 	{
 		wp_enqueue_script(
 			$this->plugin_name . '_main-js',
@@ -101,7 +105,7 @@ class Manage_WP_Users
 		));
 	}
 
-	private function loadStyles()
+	public function loadStyles()
 	{
 		wp_enqueue_style(
 			$this->plugin_name . '_main-style',
@@ -136,20 +140,15 @@ class Manage_WP_Users
 		);
 	}
 
-
-	/***************************************************************************************************************/
-	/********************************************** PUBLIC FUNCTIONS ***********************************************/
-	/***************************************************************************************************************/
-
-
 	/**
 	 * Checks user's member_status at authentication. If inactive, returns a WP_Error.
 	 *
 	 * @param $user
-	 * @param $username
+	 * @param string $username
+	 * @param string $password
 	 * @return WP_Error
 	 */
-	public function checkUserStatus($user, $username)
+	public function checkUserStatus($user, $username = '', $password = '')
 	{
 		$user_id = $user->data->ID;
 		$member_status = get_user_meta($user_id, "member_status", true);
