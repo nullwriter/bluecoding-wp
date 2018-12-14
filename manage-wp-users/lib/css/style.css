@@ -19,3 +19,7 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 .mwpu-change-status {
     color: black !important;
 }
+
+.select-info {
+    display: none;
+}
